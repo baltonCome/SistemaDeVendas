@@ -1,6 +1,6 @@
 package View;
 
-import Controlers.SalvarGestor;
+import Controlers.SalvarFuncionario;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,15 +14,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import Models.Gestor;
+import Models.Funcionario;
 import ModelsDao.VerificacaoEGeracao;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
-public class GestRegister extends JFrame {
+public class FuncRegister extends JFrame{
     
-    ArrayList <Gestor> gestor = new ArrayList<>();
+    ArrayList <Funcionario> funcionario = new ArrayList<>();
     
     JButton register = new JButton("Registar");
     JLabel name = new JLabel("Nome");
@@ -32,7 +32,7 @@ public class GestRegister extends JFrame {
     JTextField senha = new JTextField();
     JPasswordField confirmar = new JPasswordField();
     
-    public GestRegister () throws IOException{
+    public FuncRegister(String idGest) throws IOException {
         
         setTitle("Registo");
         setSize(500,320);
@@ -41,6 +41,21 @@ public class GestRegister extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        
+        
+        JButton voltar = new JButton("Voltar");
+        voltar.setBounds(10,10,70,20);
+        add(voltar);
+        voltar.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                try {
+                    new FuncionariosGestMenu(idGest);
+                } catch (IOException ex) {
+                    Logger.getLogger(FuncRegister.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                dispose();
+            }
+        });
         
         name.setBounds(150,30,100,20);
         nome.setBounds(150,55,200,20);
@@ -59,21 +74,7 @@ public class GestRegister extends JFrame {
         add(confirmar);
         add(register);
         
-        JButton voltar = new JButton("Voltar");
-        voltar.setBounds(10,10,70,20);
-        add(voltar);
-        voltar.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                try {
-                    new Login();
-                } catch (IOException ex) {
-                    Logger.getLogger(GestRegister.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                dispose();
-            }
-        });
-        
-        String perfil = "Gestor";
+        String perfil = "Funcionario";
         VerificacaoEGeracao vege = new VerificacaoEGeracao();
         String id = vege.geraIdOperario(nome.getText() , perfil);
         
@@ -81,22 +82,22 @@ public class GestRegister extends JFrame {
             public void actionPerformed(ActionEvent e1){
                 
                 if(vege.matches(confirmar.getPassword(),senha.getText())){
-                    if(Files.exists(Paths.get("Gestor.dat"))){
+                    if(Files.exists(Paths.get("Funcionario.dat"))){
                         try {
-                            if(!SalvarGestor.mostrar().isEmpty()){
-                                gestor = SalvarGestor.mostrar();
+                            if(!SalvarFuncionario.mostrar().isEmpty()){
+                                funcionario = SalvarFuncionario.mostrar();
                             }
                         } catch (IOException | ClassNotFoundException ex) {
-                            Logger.getLogger(GestRegister.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(FuncRegister.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    Gestor gest = new Gestor(perfil,senha.getText(),nome.getText(), id);
-                    gestor.add(gest);
+                    Funcionario func = new Funcionario(perfil,senha.getText(),nome.getText(), id);
+                    funcionario.add(func);
                     try {
-                        SalvarGestor.guardar(gestor);
-                        JOptionPane.showMessageDialog(null, "Perfil Salvo ","ID: "+id, PLAIN_MESSAGE);
+                        SalvarFuncionario.guardar(funcionario);
+                        JOptionPane.showMessageDialog(null, "Funcionario Salvo ","ID: "+id, PLAIN_MESSAGE);
                     } catch (IOException ex) {
-                        Logger.getLogger(GestRegister.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(FuncRegister.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }else{
                     JOptionPane.showMessageDialog(null,"Senhas Incopativeis", "ERRO", ERROR_MESSAGE);
